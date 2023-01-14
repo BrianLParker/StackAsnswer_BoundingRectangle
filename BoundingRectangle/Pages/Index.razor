@@ -1,0 +1,44 @@
+﻿@page "/"
+@using BoundingRectangle.Models;
+@using BoundingRectangle.Services;
+
+<div @ref=containingDiv style="outline: 1px solid red; margin: 10px">
+
+
+    <PageTitle>Index</PageTitle>
+
+    <h1>Hello, world!</h1>
+
+    Welcome to your new app.
+
+    <SurveyPrompt Title="How is Blazor working for you?" />
+
+
+    <button @onclick="MeasureContainingDivAsync">Measure</button>
+    @if (elementBoundingRectangle is not null)
+    {
+        <div>
+
+            Width: @elementBoundingRectangle.Width Height: @elementBoundingRectangle.Height
+        </div>
+    }
+</div>
+
+@code
+{
+    ElementReference containingDiv;
+    ElementBoundingRectangle elementBoundingRectangle = default!;
+
+    [Inject]
+    public IJSInteropCoreService JSInteropCoreService { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await JSInteropCoreService.InitializeAsync();
+    }
+
+    private async Task MeasureContainingDivAsync()
+    {
+        this.elementBoundingRectangle = await JSInteropCoreService.GetElementBoundingRectangleAsync(containingDiv);
+    }
+}
